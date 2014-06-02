@@ -10,13 +10,13 @@ class Thumb {
 
 	public $height = 200;
 
-	protected $image;
+	protected $source;
 
 	protected function cache () {
-		$pathinfo = pathinfo($this->image);
+		$pathinfo = pathinfo($this->source);
 		$ext = $pathinfo['extension'];
 
-		$hash = md5("$this->image:$this->color:$this->width:$this->height");
+		$hash = md5("$this->source:$this->color:$this->width:$this->height");
 
 		$cache = self::$cache."/$hash.$ext";
 
@@ -24,7 +24,6 @@ class Thumb {
 		$root = $pathinfo['dirname'];
 
 		if (!file_exists("$root/$cache")) {
-			echo "Saving $root/$cache";
 			$this->save("$root/$cache");
 		}
 
@@ -39,7 +38,7 @@ class Thumb {
 		}
 
 		try {
-			$image = new \Imagick($this->image);
+			$image = new \Imagick($this->source);
 			$image->thumbnailImage($this->width, $this->height, true);
 
 			if ($this->color) {
@@ -57,21 +56,19 @@ class Thumb {
 				$thumb->destroy();
 			}
 
-			$pathinfo = pathinfo($_SERVER['SCRIPT_FILENAME']);
-			$root = $pathinfo['dirname'];
-
 			$image->writeImage($path);
 			$image->destroy();
 		}
 
-		catch (Exception $e) {
+		catch (\Exception $e) {
+
 		}
 
 		return $this;
 	}
 
-	public function __construct ($image, $width = 0, $height = 0, $color = null) {
-		$this->image = $image;
+	public function __construct ($source, $width = 0, $height = 0, $color = null) {
+		$this->source = $source;
 
 		if ($width) {
 			$this->size($width, $height);
@@ -95,6 +92,10 @@ class Thumb {
 		$this->width = $width;
 		$this->height = $height ? $height : $width;
 		return $this;
+	}
+
+	public function source () {
+		return trim(str_replace(dirname($_SERVER['SCRIPT_FILENAME']), '', $this->source), '/');
 	}
 
 }
