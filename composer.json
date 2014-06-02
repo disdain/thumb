@@ -1,0 +1,12 @@
+{
+	"name": "disdain/thumb",
+	"require": {
+		"php": ">=5.3.0",
+		"ext-imagick": "Imagick is required."
+	},
+	"autoload": {
+		"psr-0": {
+			"Thumb": "."
+		}
+	}
+}
